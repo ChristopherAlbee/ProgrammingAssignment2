@@ -6,9 +6,10 @@
 ## The following function creates an object (i.e. a List) whose members 
 ## can cache a matrix and its inverse, and retrieve them also.
 makeCacheMatrix <- function(mat = matrix()) {
-    inv <- NULL          ## inv = the inverse of the matrix
+    ## Initialize the cache for the inverse matrix.
+    inv <- NULL
     
-    ## Overwrite the existing matrix; set inverse to null.
+    ## Overwrite the existing matrix; set inverse matrix to null.
     fn_set <- function(y) {  
         mat <<- y
         inv <<- NULL
@@ -19,7 +20,7 @@ makeCacheMatrix <- function(mat = matrix()) {
         mat
     }
     
-    ## Set the inverse.
+    ## Set the inverse matrix.
     fn_setinverse <- function(inverse) {
         inv <<- inverse
     }
@@ -38,13 +39,24 @@ makeCacheMatrix <- function(mat = matrix()) {
     )
 }
 
-
 ## The following function calculates the inverse of the matrix 
 ## returned by makeCacheMatrix. If the inverse has been calculated
 ## already and the matrix has not changed, then it returns the inverse
 ## from the cache.
-
-cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
-    1
+cacheSolve <- function(x, matNew = matrix(), ...) {
+    ## Read the cached matrix and its inverse from makeCacheMatrix
+    matCached <- x$get()
+    invCached <- x$getinverse()
+    
+    ## Has the inverse already been calculated, and is the matrix
+    ## the same? Then return the inverse from cache.
+    if(!is.null(invCached) && identical(matNew, matCached)) { 
+        message("getting cached inverse matrix")
+        return(invCached)     # we're done here.
+    }
+    
+    ## Otherwise calculate the inverse for the new matrix and return it.
+    inv  <- solve(matNew, ...)
+    message("calculating new inverse matrix")
+    inv
 }
